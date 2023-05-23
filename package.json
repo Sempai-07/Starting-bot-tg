@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "database-sempai": "^2.1.5",
-    "telegramsjs": "^0.4.1"
+    "telegramsjs": "0.6.1"
   }
 }
