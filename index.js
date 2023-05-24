@@ -3,7 +3,7 @@ const { gameOptions, againOptions } = require('./options');
 const { CreateStorage } = require('database-sempai');
 const test = require('telegramsjs');
 
-const bot = new TelegramBot('6074448977:AAHmrJwDDkBBpdD0AjQK-SGuSpZHbqFZNGI');
+const bot = new TelegramBot('');
 
 const db = new CreateStorage({
   path: 'database',
@@ -73,18 +73,21 @@ bot.on('callback_query', async msg => {
   console.log(msg);
   msg.deferUpdate();
   const data = msg.data;
-  const chatId = msg.message.chat.id;
-  const username = msg.message.from?.username ? `${msg.message.from.username}` : msg.message.from.first_name;
+  const chatId = msg.from.id;
+  const username = msg.from?.username ? `@${msg.from.username}` : msg.from.first_name;
   if (data === '/again') {
     return startGame(chatId);
   }
   const loss = await db.get('chatId', `${chatId}_loss`) ?? 0;
   const win = await db.get('chatId', `${chatId}_win`) ?? 0;
-  if (data == chats[chatId]) {
-    if (chats[chatId] == undefined) {
+  if (chats[chatId] == undefined) {
       msg.reply(`${username}, ви закінчили попередню гру, тому почніть нову`);
+      setTimeout(async function() {
+        await msg.deleted({});
+      }, 1000);
       return;
     }
+  if (data == chats[chatId]) {
     await db.set('chatId', `${chatId}_win`, win + 1)
     await msg.update(`Вітаю, ти відгадав число ${chats[chatId]}`, {
       replyMarkup: againOptions
